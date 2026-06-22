@@ -10,11 +10,12 @@
   --accent:#2563eb;--accent2:#dbeafe;--shadow:0 12px 35px rgba(15,23,42,.08);--radius:22px;--readerSize:15px;
 }
 .dark{--bg:#0b1120;--panel:#111827;--panel2:#182235;--text:#e5e7eb;--muted:#9ca3af;--line:#263447;--accent:#60a5fa;--accent2:#1e3a5f;--shadow:0 12px 35px rgba(0,0,0,.28)}
+.paper{--bg:#e8dfd0;--panel:#f4edde;--panel2:#eee4d3;--text:#26231f;--muted:#6f675d;--line:#d4c8b7;--accent:#837866;--accent2:#ddd2bf;--shadow:0 12px 35px rgba(82,70,50,.14)}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif} button,input,select{font:inherit}
 .lock{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#0f172a,#1d4ed8)}
 .lockBox{width:min(420px,100%);background:white;color:#111827;border-radius:26px;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.28)}
 .lockBox h1{margin:0 0 8px;font-size:28px}.lockBox p{color:#64748b}.lockBox input{width:100%;padding:14px;border:1px solid #d1d5db;border-radius:15px;margin:12px 0}.lockBox button,.primary{background:#2563eb;color:white;border:0;border-radius:15px;padding:13px 16px;font-weight:800;cursor:pointer}.hidden{display:none!important}
-.app{height:100vh;display:grid;grid-template-rows:auto 1fr}.top{padding:16px 22px;background:rgba(255,255,255,.75);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.dark .top{background:rgba(17,24,39,.75)}
+.app{height:100vh;display:grid;grid-template-rows:auto 1fr}.top{padding:16px 22px;background:rgba(255,255,255,.75);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.dark .top{background:rgba(17,24,39,.75)} .paper .top{background:rgba(244,237,222,.78)}
 .topInner{max-width:1500px;margin:auto;display:flex;gap:14px;align-items:center;justify-content:space-between}.brand h1{font-size:22px;margin:0}.brand div{font-size:13px;color:var(--muted);margin-top:3px}.actions{display:flex;gap:8px;flex-wrap:wrap}.pillBtn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:999px;padding:9px 13px;cursor:pointer;font-weight:700}.pillBtn.active{background:var(--accent);border-color:var(--accent);color:white}
 .layout{max-width:1500px;margin:0 auto;width:100%;height:100%;display:grid;grid-template-columns:390px 1fr;gap:18px;padding:18px;overflow:hidden}.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);min-height:0}.sidebar{display:grid;grid-template-rows:auto auto 1fr;overflow:hidden}.filters{padding:16px;border-bottom:1px solid var(--line)}
 .search{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:16px;padding:13px 14px;outline:none}.filterRow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.filterRow input,.filterRow select{min-width:0;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:14px;padding:10px}.stats{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);color:var(--muted);font-size:13px;align-items:center;justify-content:space-between}
@@ -46,7 +47,7 @@
 <body>
 <div id="lock" class="lock"><div class="lockBox"><h1>News Reader</h1><p>Reader-only access to your Firebase news article bank.</p><input id="passcode" type="password" placeholder="Passcode" onkeydown="if(event.key==='Enter')unlock()"><button class="primary" onclick="unlock()">Unlock</button><p id="passErr" style="color:#dc2626;font-weight:700"></p></div></div>
 <div id="app" class="app hidden">
-  <header class="top"><div class="topInner"><div class="brand"><h1>News Reader</h1><div>Cleaner, reader-friendly view of saved Firebase articles</div></div><div class="actions"><button class="pillBtn" onclick="setFont(-1)">A−</button><button class="pillBtn" onclick="setFont(1)">A+</button><button id="summaryToggle" class="pillBtn active" onclick="toggleSummary()">Summary On</button><button class="pillBtn" onclick="toggleTheme()">Dark / Light</button><button class="pillBtn" onclick="clearFilters()">Clear Filters</button><button class="pillBtn" onclick="scrollToTop()">Top ↑</button></div></div></header>
+  <header class="top"><div class="topInner"><div class="brand"><h1>News Reader</h1><div>Cleaner, reader-friendly view of saved Firebase articles</div></div><div class="actions"><button class="pillBtn" onclick="setFont(-1)">A−</button><button class="pillBtn" onclick="setFont(1)">A+</button><button id="summaryToggle" class="pillBtn active" onclick="toggleSummary()">Summary On</button><button class="pillBtn" onclick="toggleTheme()">Dark / Light</button><button id="paperToggle" class="pillBtn active" onclick="togglePaper()">Paper Colour</button><button class="pillBtn" onclick="clearFilters()">Clear Filters</button><button class="pillBtn" onclick="scrollToTop()">Top ↑</button></div></div></header>
   <main class="layout">
     <section class="panel sidebar">
       <div class="filters">
@@ -77,7 +78,7 @@ const app=initializeApp(firebaseConfig), db=getFirestore(app), ARTICLES_COLLECTI
 let articles=[],selectedId="",summaryOn=true,keywordFilter="",started=false;
 window.startApp=async function(){if(started)return;started=true;await loadArticles()};
 if(sessionStorage.getItem('newsReaderUnlocked')==='yes')window.startApp();
-window.renderList=renderList;window.openArticle=openArticle;window.clearFilters=clearFilters;window.toggleTheme=toggleTheme;window.setFont=setFont;window.toggleSummary=toggleSummary;window.filterTag=filterTag;window.toggleMobileFilters=toggleMobileFilters;window.scrollToTop=scrollToTop;
+window.renderList=renderList;window.openArticle=openArticle;window.clearFilters=clearFilters;window.toggleTheme=toggleTheme;window.togglePaper=togglePaper;window.setFont=setFont;window.toggleSummary=toggleSummary;window.filterTag=filterTag;window.toggleMobileFilters=toggleMobileFilters;window.scrollToTop=scrollToTop;
 function toggleMobileFilters(){const box=document.getElementById('filterOptions'),btn=document.getElementById('mobileFilterToggle');box.classList.toggle('open');btn.textContent=box.classList.contains('open')?'Hide filters':'Show filters'}
 function scrollToTop(){const reader=document.getElementById('reader');if(reader&&reader.scrollTo)reader.scrollTo({top:0,behavior:'smooth'});window.scrollTo({top:0,behavior:'smooth'})}
 async function loadArticles(){try{const snap=await getDocs(query(collection(db,ARTICLES_COLLECTION),orderBy('publicationDate','desc')));articles=snap.docs.map(d=>({id:d.id,...d.data()}));fillSources();renderList();if(articles[0])openArticle(articles[0].id)}catch(e){document.getElementById('list').innerHTML='<div class="loading">Could not load Firebase articles. '+esc(e.message)+'</div>';document.getElementById('count').textContent='Load failed'}}
@@ -88,8 +89,10 @@ function openArticle(id){selectedId=id;const a=articles.find(x=>x.id===id);if(!a
 function paragraphs(text){return esc(text).split(/\n{2,}/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('')}
 function filterTag(t){keywordFilter=t;renderList()}
 function clearFilters(){['search','source','from','to'].forEach(id=>document.getElementById(id).value='');keywordFilter='';renderList()}
-function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('newsReaderTheme',document.body.classList.contains('dark')?'dark':'light')}
-if(localStorage.getItem('newsReaderTheme')==='dark')document.body.classList.add('dark');
+function applyMode(mode){document.body.classList.remove('dark','paper');if(mode==='dark')document.body.classList.add('dark');else if(mode==='paper')document.body.classList.add('paper');localStorage.setItem('newsReaderTheme',mode);const btn=document.getElementById('paperToggle');if(btn)btn.classList.toggle('active',mode==='paper')}
+function toggleTheme(){applyMode(document.body.classList.contains('dark')?'paper':'dark')}
+function togglePaper(){applyMode(document.body.classList.contains('paper')?'light':'paper')}
+applyMode(localStorage.getItem('newsReaderTheme')||'paper');
 function setFont(delta){const root=document.documentElement;let size=parseInt(getComputedStyle(root).getPropertyValue('--readerSize'))||18;size=Math.max(15,Math.min(24,size+delta));root.style.setProperty('--readerSize',size+'px')}
 function toggleSummary(){summaryOn=!summaryOn;document.getElementById('summaryToggle').classList.toggle('active',summaryOn);document.getElementById('summaryToggle').textContent=summaryOn?'Summary On':'Summary Off';if(selectedId)openArticle(selectedId)}
 function formatDate(d){if(!d)return 'No date';const date=new Date(d+'T00:00:00');return isNaN(date)?d:date.toLocaleDateString('en-SG',{day:'2-digit',month:'short',year:'numeric'})}
